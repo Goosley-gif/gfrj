@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>betty's Grievance Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reclamațiile lui Betty 💌</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -27,24 +28,17 @@
       max-width: 400px;
       width: 90%;
     }
-    .pink-button {
-      background-color: #ff69b4;
-      border: none;
-      color: white;
+    .pink-button, .green-button {
       padding: 10px 20px;
       font-size: 16px;
       border-radius: 10px;
-      cursor: pointer;
-    }
-    .green-button {
-      background-color: #4CAF50;
       border: none;
       color: white;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 10px;
       cursor: pointer;
+      margin-top: 10px;
     }
+    .pink-button { background-color: #ff69b4; }
+    .green-button { background-color: #4CAF50; }
     input, textarea {
       width: 90%;
       padding: 10px;
@@ -54,29 +48,28 @@
     }
   </style>
 </head>
-<body>
+<body oncontextmenu="return false">
   <div class="container" id="login-screen">
-    <h2>Reclamatiile lui betris💌</h2>
-    <input type="text" id="username" placeholder="Nume">
-    <input type="password" id="password" placeholder="Parola">
-    <button class="green-button" onclick="login()">Login</button>
+    <h2>Reclamațiile lui Beti 💌</h2>
+    <input type="text" id="username" placeholder="Numele tău">
+    <button class="green-button" onclick="login()">Începe</button>
   </div>
 
   <div class="container" id="welcome-screen" style="display: none;">
-    <h2>Bun venit la zona ta de reclamatii, <span id="user-name"></span> 💌</h2>
-    <p>Aici iti poti spune problemele tale, iar eu le voi primi și îți voi răspunde!!!</p>
+    <h2>Bun venit, <span id="user-name"></span> 💌</h2>
+    <p>Scrie mai jos reclamația ta. Voi primi tot și îți voi răspunde!</p>
     <textarea id="grievance-text" rows="5" placeholder="Scrie aici..."></textarea><br>
     <button class="pink-button" onclick="submitGrievance()">Trimite</button>
   </div>
 
   <div class="container" id="thankyou-screen" style="display: none;">
     <h2>Mulțumesc, <span id="thankyou-name"></span> 💖</h2>
-    <p>Reclamația ta a fost trimisă cu succes!<br>Goosley va răspunde cât de curând. 📨</p>
+    <p>Reclamația ta a fost trimisă cu succes!<br>Goosley o va citi cât de curând. 📨</p>
     <button class="pink-button" onclick="backToWelcome()">Trimite Alta</button>
   </div>
 
   <script>
-    // Firebase Config
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDDOtT_92PAgbiEdztUKrMthVqow9nGFbg",
       authDomain: "ceicarestiu-b5e76.firebaseapp.com",
@@ -87,54 +80,69 @@
       measurementId: "G-J9DYQF0W8S"
     };
 
-    // Initialize Firebase
+    // Init Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
-    let currentUser = '';
-    let currentPassword = '';
+    let currentUserName = '';
 
     function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-
-      if (username && password) {
-        currentUser = username;
-        currentPassword = password;
-        document.getElementById('user-name').textContent = username;
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('welcome-screen').style.display = 'block';
-      } else {
-        alert('Te rog completează numele și parola!');
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        alert('Te rog introdu un nume!');
+        return;
       }
+
+      currentUserName = username;
+
+      auth.signInAnonymously()
+        .then(() => {
+          document.getElementById('user-name').textContent = currentUserName;
+          document.getElementById('login-screen').style.display = 'none';
+          document.getElementById('welcome-screen').style.display = 'block';
+        })
+        .catch((error) => {
+          alert("Eroare la autentificare: " + error.message);
+        });
     }
 
     function submitGrievance() {
       const text = document.getElementById('grievance-text').value.trim();
-
-      if (text) {
-        db.collection('grievances').add({
-          username: currentUser,
-          password: currentPassword, // 🔐 parola salvată aici
-          message: text,
-          timestamp: new Date()
-        }).then(() => {
-          document.getElementById('welcome-screen').style.display = 'none';
-          document.getElementById('thankyou-name').textContent = currentUser;
-          document.getElementById('thankyou-screen').style.display = 'block';
-          document.getElementById('grievance-text').value = '';
-        }).catch(error => {
-          alert('A apărut o eroare la trimitere: ' + error.message);
-        });
-      } else {
-        alert('Te rog scrie ceva!');
+      if (!text) {
+        alert('Te rog scrie o reclamație!');
+        return;
       }
+
+      db.collection('grievances').add({
+        username: currentUserName,
+        message: text,
+        timestamp: new Date()
+      }).then(() => {
+        document.getElementById('grievance-text').value = '';
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('thankyou-name').textContent = currentUserName;
+        document.getElementById('thankyou-screen').style.display = 'block';
+      }).catch(error => {
+        alert('Eroare la trimitere: ' + error.message);
+      });
     }
 
     function backToWelcome() {
       document.getElementById('thankyou-screen').style.display = 'none';
       document.getElementById('welcome-screen').style.display = 'block';
     }
+
+    // Basic dev tools blocking
+    document.onkeydown = function (e) {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
+        (e.ctrlKey && e.key === "U")
+      ) {
+        return false;
+      }
+    };
   </script>
 </body>
 </html>
