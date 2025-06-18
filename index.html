@@ -76,17 +76,19 @@
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "YOUR-API-KEY",
-      authDomain: "YOUR-PROJECT-ID.firebaseapp.com",
-      projectId: "YOUR-PROJECT-ID",
-      storageBucket: "YOUR-PROJECT-ID.appspot.com",
-      messagingSenderId: "YOUR-MESSAGE-ID",
-      appId: "YOUR-APP-ID"
-    };
+   const firebaseConfig = {
+  apiKey: "AIzaSyDDOtT_92PAgbiEdztUKrMthVqow9nGFbg",
+  authDomain: "ceicarestiu-b5e76.firebaseapp.com",
+  projectId: "ceicarestiu-b5e76",
+  storageBucket: "ceicarestiu-b5e76.firebasestorage.app",
+  messagingSenderId: "500789142311",
+  appId: "1:500789142311:web:1028c57883468ca586bf02",
+  measurementId: "G-J9DYQF0W8S"
+};
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
     let currentUser = '';
 
