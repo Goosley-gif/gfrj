@@ -39,12 +39,13 @@
     }
     .pink-button { background-color: #ff69b4; }
     .green-button { background-color: #4CAF50; }
-    input, textarea {
+    input, textarea, select {
       width: 90%;
       padding: 10px;
       margin: 10px 0;
       border-radius: 10px;
       border: 1px solid #ccc;
+      font-size: 18px;
     }
   </style>
 </head>
@@ -64,6 +65,16 @@
     <h2>Bun venit, <span id="user-name"></span> 💌</h2>
     <p>Scrie mai jos reclamația ta. Voi primi tot și îți voi răspunde!</p>
     <textarea id="grievance-text" rows="5" placeholder="Scrie aici..."></textarea><br>
+    
+    <label for="mood-select" style="font-weight: bold;">Selectează starea ta:</label><br>
+    <select id="mood-select" aria-label="Selectează starea ta">
+      <option value="🥳">🥳</option>
+      <option value="😛">😛</option>
+      <option value="🙄">🙄</option>
+      <option value="☹️">☹️</option>
+      <option value="🤬">🤬</option>
+    </select><br>
+
     <button class="pink-button" onclick="submitGrievance()">Trimite</button>
     <button class="green-button" onclick="logout()">Deconectează-te</button>
     <p id="submit-message" style="color:green;"></p>
@@ -166,6 +177,7 @@
 
     function submitGrievance() {
       const text = document.getElementById('grievance-text').value.trim();
+      const mood = document.getElementById('mood-select').value;
       const user = auth.currentUser;
 
       if (!text) {
@@ -183,6 +195,7 @@
         userId: user.uid,
         email: user.email,
         message: text,
+        mood: mood,  // Save mood here
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         document.getElementById('grievance-text').value = '';
