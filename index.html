@@ -129,6 +129,26 @@ const analytics = getAnalytics(app);
       document.getElementById('thankyou-screen').style.display = 'none';
       document.getElementById('welcome-screen').style.display = 'block';
     }
+      document.getElementById("grievanceForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // stop form from refreshing the page
+
+    const name = document.getElementById("name").value;
+    const grievance = document.getElementById("grievance").value;
+
+    db.collection("grievances").add({
+      name: name,
+      grievance: grievance,
+      timestamp: new Date()
+    })
+    .then(() => {
+      alert("Grievance submitted!");
+      document.getElementById("grievanceForm").reset();
+    })
+    .catch((error) => {
+      console.error("Error submitting grievance: ", error);
+      alert("There was a problem submitting your grievance.");
+    });
+  });
   </script>
 </body>
 </html>
