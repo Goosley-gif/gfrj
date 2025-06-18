@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>betty's Grievance Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -58,56 +58,59 @@
   <div class="container" id="login-screen">
     <h2>Reclamatiile lui betris💌</h2>
     <input type="text" id="username" placeholder="Nume">
-    <input type="password" id="password" placeholder="parola">
+    <input type="password" id="password" placeholder="Parola">
     <button class="green-button" onclick="login()">Login</button>
   </div>
 
   <div class="container" id="welcome-screen" style="display: none;">
-    <h2>Bun venit la zona ta de reclamatii!!! (ceicarestiu), <span id="user-name"></span></h2>
-    <p>Aici iti poti spune problemele tale, iar eu le voi primi( daca am facut ce trebuie bine) si iti voi raspunde!!!</p>
-    <textarea id="grievance-text" rows="5"></textarea><br>
-    <button class="pink-button" onclick="submitGrievance()">Submit Grievance</button>
+    <h2>Bun venit la zona ta de reclamatii, <span id="user-name"></span> 💌</h2>
+    <p>Aici iti poti spune problemele tale, iar eu le voi primi și îți voi răspunde!!!</p>
+    <textarea id="grievance-text" rows="5" placeholder="Scrie aici..."></textarea><br>
+    <button class="pink-button" onclick="submitGrievance()">Trimite</button>
   </div>
 
   <div class="container" id="thankyou-screen" style="display: none;">
-    <h2>Thank you, <span id="thankyou-name"></span> 💖</h2>
-    <p>Your grievance has been sent to<br> Ishan 💌<br>He will get back to you very soon!<br>(He will think about it)</p>
-    <button class="pink-button" onclick="backToWelcome()">Submit Another</button>
+    <h2>Mulțumesc, <span id="thankyou-name"></span> 💖</h2>
+    <p>Reclamația ta a fost trimisă cu succes!<br>Ishan va răspunde cât de curând. 📨</p>
+    <button class="pink-button" onclick="backToWelcome()">Trimite Alta</button>
   </div>
 
   <script>
-   const firebaseConfig = {
-  apiKey: "AIzaSyDDOtT_92PAgbiEdztUKrMthVqow9nGFbg",
-  authDomain: "ceicarestiu-b5e76.firebaseapp.com",
-  projectId: "ceicarestiu-b5e76",
-  storageBucket: "ceicarestiu-b5e76.firebasestorage.app",
-  messagingSenderId: "500789142311",
-  appId: "1:500789142311:web:1028c57883468ca586bf02",
-  measurementId: "G-J9DYQF0W8S"
-};
+    // ✅ Firebase Config - this is correct
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDOtT_92PAgbiEdztUKrMthVqow9nGFbg",
+      authDomain: "ceicarestiu-b5e76.firebaseapp.com",
+      projectId: "ceicarestiu-b5e76",
+      storageBucket: "ceicarestiu-b5e76.appspot.com",
+      messagingSenderId: "500789142311",
+      appId: "1:500789142311:web:1028c57883468ca586bf02",
+      measurementId: "G-J9DYQF0W8S"
+    };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+    // ✅ Initialize Firebase (using compat SDK)
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
     let currentUser = '';
 
     function login() {
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
+
       if (username && password) {
         currentUser = username;
         document.getElementById('user-name').textContent = username;
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('welcome-screen').style.display = 'block';
       } else {
-        alert('Enter both username and password!');
+        alert('Te rog completează numele și parola!');
       }
     }
 
     function submitGrievance() {
-      const text = document.getElementById('grievance-text').value;
-      if (text.trim()) {
+      const text = document.getElementById('grievance-text').value.trim();
+
+      if (text) {
         db.collection('grievances').add({
           username: currentUser,
           message: text,
@@ -118,10 +121,10 @@ const analytics = getAnalytics(app);
           document.getElementById('thankyou-screen').style.display = 'block';
           document.getElementById('grievance-text').value = '';
         }).catch(error => {
-          alert('Error saving grievance: ' + error);
+          alert('A apărut o eroare la trimitere: ' + error.message);
         });
       } else {
-        alert('Please enter a grievance!');
+        alert('Te rog scrie ceva!');
       }
     }
 
@@ -129,26 +132,6 @@ const analytics = getAnalytics(app);
       document.getElementById('thankyou-screen').style.display = 'none';
       document.getElementById('welcome-screen').style.display = 'block';
     }
-      document.getElementById("grievanceForm").addEventListener("submit", function(e) {
-    e.preventDefault(); // stop form from refreshing the page
-
-    const name = document.getElementById("name").value;
-    const grievance = document.getElementById("grievance").value;
-
-    db.collection("grievances").add({
-      name: name,
-      grievance: grievance,
-      timestamp: new Date()
-    })
-    .then(() => {
-      alert("Grievance submitted!");
-      document.getElementById("grievanceForm").reset();
-    })
-    .catch((error) => {
-      console.error("Error submitting grievance: ", error);
-      alert("There was a problem submitting your grievance.");
-    });
-  });
   </script>
 </body>
 </html>
