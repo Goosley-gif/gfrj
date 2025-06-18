@@ -94,6 +94,7 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
+    // Elements
     const authScreen = document.getElementById('auth-screen');
     const welcomeScreen = document.getElementById('welcome-screen');
     const thankyouScreen = document.getElementById('thankyou-screen');
@@ -109,7 +110,7 @@
         authScreen.style.display = 'none';
         welcomeScreen.style.display = 'block';
         thankyouScreen.style.display = 'none';
-        userNameSpan.textContent = user.email;
+        userNameSpan.textContent = user.email || 'Utilizator';
         authMessage.textContent = '';
         submitMessage.textContent = '';
       } else {
@@ -126,6 +127,7 @@
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       if (!email || !password) {
+        authMessage.style.color = 'red';
         authMessage.textContent = 'Te rog completează email și parola!';
         return;
       }
@@ -144,6 +146,7 @@
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       if (!email || !password) {
+        authMessage.style.color = 'red';
         authMessage.textContent = 'Te rog completează email și parola!';
         return;
       }
@@ -184,7 +187,7 @@
       }).then(() => {
         document.getElementById('grievance-text').value = '';
         welcomeScreen.style.display = 'none';
-        thankyouNameSpan.textContent = user.email;
+        thankyouNameSpan.textContent = user.email || 'Utilizator';
         thankyouScreen.style.display = 'block';
         submitMessage.textContent = '';
       }).catch(error => {
@@ -199,7 +202,7 @@
       submitMessage.textContent = '';
     }
 
-    // Basic dev tools blocking (note: can be bypassed easily)
+    // Basic dev tools blocking (can be bypassed)
     document.onkeydown = function (e) {
       if (
         e.key === "F12" ||
