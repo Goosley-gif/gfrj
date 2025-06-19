@@ -202,4 +202,23 @@
         mood: mood,
         severity: severity,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() =>
+      }).then(() => { 
+     // Golire textarea și afișare ecran de mulțumire
+        document.getElementById('grievance-text').value = '';
+        submitMessage.textContent = '';
+        welcomeScreen.style.display = 'none';
+        thankyouScreen.style.display = 'block';
+        thankyouNameSpan.textContent = user.email || 'Utilizator';
+      }).catch(error => {
+        submitMessage.style.color = 'red';
+        submitMessage.textContent = 'Eroare la trimitere: ' + error.message;
+      });
+    }
+
+    function backToWelcome() {
+      thankyouScreen.style.display = 'none';
+      welcomeScreen.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
