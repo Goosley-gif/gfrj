@@ -75,6 +75,15 @@
       <option value="🤬">🤬</option>
     </select><br>
 
+    <label for="severity" style="font-weight: bold;">Severitate:</label><br>
+    <select id="severity" aria-label="Selectează severitatea">
+      <option value="Stare tip dora 😼">Stare tip dora 😼</option>
+      <option value="Andrei șarpe 🐍🐍🐍">Andrei șarpe 🐍🐍🐍</option>
+      <option value="E nevoie de o înghețată 🍦">E nevoie de o înghețată 🍦</option>
+      <option value="Justin Bieber ahh crashout 👦🏼">Justin Bieber ahh crashout 👦🏼</option>
+      <option value="Nicole Watterson ☠️🐱">Nicole Watterson ☠️🐱</option>
+    </select><br>
+
     <button class="pink-button" onclick="submitGrievance()">Trimite</button>
     <button class="green-button" onclick="logout()">Deconectează-te</button>
     <p id="submit-message" style="color:green;"></p>
@@ -89,7 +98,6 @@
   </div>
 
   <script>
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDDOtT_92PAgbiEdztUKrMthVqow9nGFbg",
       authDomain: "ceicarestiu-b5e76.firebaseapp.com",
@@ -100,12 +108,10 @@
       measurementId: "G-J9DYQF0W8S"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // Elements
     const authScreen = document.getElementById('auth-screen');
     const welcomeScreen = document.getElementById('welcome-screen');
     const thankyouScreen = document.getElementById('thankyou-screen');
@@ -114,10 +120,8 @@
     const userNameSpan = document.getElementById('user-name');
     const thankyouNameSpan = document.getElementById('thankyou-name');
 
-    // Monitor auth state
     auth.onAuthStateChanged(user => {
       if (user) {
-        // Show grievance UI
         authScreen.style.display = 'none';
         welcomeScreen.style.display = 'block';
         thankyouScreen.style.display = 'none';
@@ -125,7 +129,6 @@
         authMessage.textContent = '';
         submitMessage.textContent = '';
       } else {
-        // Show login/signup UI
         authScreen.style.display = 'block';
         welcomeScreen.style.display = 'none';
         thankyouScreen.style.display = 'none';
@@ -178,6 +181,7 @@
     function submitGrievance() {
       const text = document.getElementById('grievance-text').value.trim();
       const mood = document.getElementById('mood-select').value;
+      const severity = document.getElementById('severity').value;
       const user = auth.currentUser;
 
       if (!text) {
@@ -195,36 +199,7 @@
         userId: user.uid,
         email: user.email,
         message: text,
-        mood: mood,  // Save mood here
+        mood: mood,
+        severity: severity,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        document.getElementById('grievance-text').value = '';
-        welcomeScreen.style.display = 'none';
-        thankyouNameSpan.textContent = user.email || 'Utilizator';
-        thankyouScreen.style.display = 'block';
-        submitMessage.textContent = '';
-      }).catch(error => {
-        submitMessage.style.color = 'red';
-        submitMessage.textContent = 'Eroare la trimitere: ' + error.message;
-      });
-    }
-
-    function backToWelcome() {
-      thankyouScreen.style.display = 'none';
-      welcomeScreen.style.display = 'block';
-      submitMessage.textContent = '';
-    }
-
-    // Basic dev tools blocking (can be bypassed)
-    document.onkeydown = function (e) {
-      if (
-        e.key === "F12" ||
-        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
-        (e.ctrlKey && e.key === "U")
-      ) {
-        return false;
-      }
-    };
-  </script>
-</body>
-</html>
+      }).then(() =>
